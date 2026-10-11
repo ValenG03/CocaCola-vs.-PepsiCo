@@ -1,6 +1,5 @@
 import streamlit as st
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 
 # ============================================================
 # CONFIGURACIÓN
@@ -15,8 +14,9 @@ PEP_SOFT = "rgba(11,78,162,0.10)"
 TEXT = "#1F2328"
 MUTED = "#6B7280"
 GRID = "#EEF0F3"
+AXIS = "#CBD0D8"
 FONT = "Inter, sans-serif"
-H = 360  # altura única de todos los bloques
+H = 400  # altura única de todos los bloques de gráficos
 CFG = {"displayModeBar": False}
 
 # ============================================================
@@ -112,18 +112,19 @@ def kpi(label, ko_val, pep_val, pie, ganador):
     )
 
 
-def base(fig, titulo, t=60, b=20):
+def base(fig, titulo, t=100, b=64, l=64, r=28, leyenda=True):
     fig.update_layout(
         title=dict(text=f"<b>{titulo}</b>", font=dict(size=16, color=TEXT, family=FONT),
-                   x=0.03, xanchor="left", y=0.96),
+                   x=0.03, xanchor="left", y=0.975, yanchor="top"),
         height=H,
-        margin=dict(l=16, r=16, t=t, b=b),
+        margin=dict(l=l, r=r, t=t, b=b),
         paper_bgcolor="white",
         plot_bgcolor="white",
         font=dict(family=FONT, color=TEXT, size=12),
         separators=",.",
-        legend=dict(orientation="h", yanchor="top", y=-0.08, x=0.5, xanchor="center",
-                    font=dict(size=12, family=FONT)),
+        showlegend=leyenda,
+        legend=dict(orientation="h", x=1, xanchor="right", y=1.06, yanchor="bottom",
+                    font=dict(size=12, family=FONT), bgcolor="rgba(0,0,0,0)"),
         hoverlabel=dict(font=dict(family=FONT, size=12), bgcolor="white"),
         bargap=0.32,
         bargroupgap=0.08,
@@ -131,8 +132,22 @@ def base(fig, titulo, t=60, b=20):
     return fig
 
 
+def ejes(fig, x_titulo=None, y_titulo=None):
+    estilo = dict(showline=True, linecolor=AXIS, linewidth=1, ticks="outside", tickcolor=AXIS,
+                  ticklen=5, automargin=True, zeroline=False,
+                  tickfont=dict(size=12, color=TEXT, family=FONT),
+                  title_font=dict(size=12, color=MUTED, family=FONT))
+    fig.update_xaxes(**estilo, title_text=x_titulo, title_standoff=10)
+    fig.update_yaxes(**estilo, title_text=y_titulo, title_standoff=10)
+    return fig
+
+
 def mostrar(fig):
     st.plotly_chart(fig, use_container_width=True, config=CFG, theme=None)
+
+
+def espacio(px=26):
+    st.markdown(f'<div style="height:{px}px"></div>', unsafe_allow_html=True)
 
 
 # ============================================================
@@ -148,7 +163,7 @@ html, body, .stApp, .stApp *:not([data-testid="stIconMaterial"]) {{
 .stApp {{background:#F4F5F7;}}
 header[data-testid="stHeader"] {{background:transparent;}}
 [data-testid="stToolbar"], [data-testid="stDecoration"], #MainMenu, footer {{display:none;}}
-.block-container {{padding-top:1.4rem; padding-bottom:1.2rem; max-width:1520px;}}
+.block-container {{padding-top:1.4rem; padding-bottom:1.4rem; max-width:1520px;}}
 .stApp p, .stApp label, .stApp span, .stApp li {{color:{TEXT};}}
 
 .title {{font-size:2.15rem; font-weight:800; line-height:1.1; letter-spacing:-0.02em;}}
@@ -156,36 +171,36 @@ header[data-testid="stHeader"] {{background:transparent;}}
 .subtitle {{color:{MUTED}; font-size:.92rem; margin-top:6px;}}
 .pill {{display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #E5E7EB;
         border-radius:999px; padding:6px 14px; font-size:.82rem; font-weight:600; color:{TEXT};
-        margin:4px 0 2px 0;}}
+        margin:6px 0 4px 0;}}
 .pill b {{width:8px; height:8px; border-radius:50%; background:linear-gradient(90deg,{KO} 50%,{PEP} 50%);}}
 
-.kpi {{background:#fff; border:1px solid #E8EAEE; border-radius:16px; padding:16px 18px;
-       box-shadow:0 1px 3px rgba(16,24,40,.05); height:236px; box-sizing:border-box;
+.kpi {{background:#fff; border:1px solid #E8EAEE; border-radius:16px; padding:18px 20px;
+       box-shadow:0 1px 3px rgba(16,24,40,.05); height:262px; box-sizing:border-box;
        display:flex; flex-direction:column; transition:all .18s ease;}}
 .kpi:hover {{transform:translateY(-3px); box-shadow:0 10px 24px rgba(16,24,40,.10);}}
 .kpi-label {{font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
-             color:{MUTED}; margin-bottom:10px;}}
+             color:{MUTED}; margin-bottom:12px;}}
 .kpi-brand {{display:flex; align-items:center; gap:7px; font-size:.8rem; color:#4B5563; font-weight:500;}}
 .kpi-brand i {{width:8px; height:8px; border-radius:50%; display:inline-block;}}
-.kpi-val {{font-size:1.32rem; font-weight:800; margin:1px 0 7px 0; white-space:nowrap; letter-spacing:-0.01em;}}
-.kpi-foot {{font-size:.72rem; color:{MUTED}; margin-top:auto; padding-top:8px; border-top:1px solid #F0F1F4;
-            line-height:1.35;}}
-.kpi-win {{font-size:.7rem; font-weight:700; margin-top:7px; padding:3px 9px; border-radius:999px;
+.kpi-val {{font-size:1.32rem; font-weight:800; margin:2px 0 9px 0; white-space:nowrap; letter-spacing:-0.01em;}}
+.kpi-foot {{font-size:.72rem; color:{MUTED}; margin-top:auto; padding-top:9px; border-top:1px solid #F0F1F4;
+            line-height:1.4;}}
+.kpi-win {{font-size:.7rem; font-weight:700; margin-top:8px; padding:4px 10px; border-radius:999px;
            align-self:flex-start;}}
 
 div[data-testid="stPlotlyChart"] {{background:#fff; border:1px solid #E8EAEE; border-radius:16px;
       overflow:hidden; box-shadow:0 1px 3px rgba(16,24,40,.05); transition:box-shadow .18s ease;}}
 div[data-testid="stPlotlyChart"]:hover {{box-shadow:0 10px 24px rgba(16,24,40,.08);}}
 
-.card {{background:#fff; border:1px solid #E8EAEE; border-radius:16px; padding:18px 20px;
+.card {{background:#fff; border:1px solid #E8EAEE; border-radius:16px; padding:20px 22px;
         box-shadow:0 1px 3px rgba(16,24,40,.05); height:{H + 2}px; box-sizing:border-box;
         overflow-y:auto; transition:box-shadow .18s ease;}}
 .card:hover {{box-shadow:0 10px 24px rgba(16,24,40,.08);}}
-.card-title {{font-size:16px; font-weight:700; color:{TEXT}; margin-bottom:12px;}}
-.ins {{border-left:3px solid #E5E7EB; padding:2px 0 2px 10px; margin-bottom:10px;
-       font-size:.84rem; line-height:1.42; color:{TEXT};}}
-.ins b {{display:block; font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; margin-bottom:1px;}}
-.note {{font-size:.78rem; color:{MUTED}; text-align:center; margin-top:4px;}}
+.card-title {{font-size:16px; font-weight:700; color:{TEXT}; margin-bottom:14px;}}
+.ins {{border-left:3px solid #E5E7EB; padding:2px 0 2px 11px; margin-bottom:12px;
+       font-size:.84rem; line-height:1.45; color:{TEXT};}}
+.ins b {{display:block; font-size:.76rem; text-transform:uppercase; letter-spacing:.05em; margin-bottom:2px;}}
+.note {{font-size:.78rem; color:{MUTED}; text-align:center; margin-top:6px;}}
 div[data-testid="stSegmentedControl"] {{display:flex; justify-content:flex-end;}}
 </style>
 """,
@@ -217,6 +232,7 @@ pub_p = PUB_2025["pep"] / VENTAS_2025["pep"] * 100
 pub_p_total = PUB_2025["pep_total"] / VENTAS_2025["pep"] * 100
 
 st.markdown(f'<div class="pill"><b></b>{cfg["detalle"]}</div>', unsafe_allow_html=True)
+espacio(10)
 
 # ============================================================
 # FILA 1 · 5 PARÁMETROS CLAVE
@@ -239,13 +255,15 @@ cards = [
         f"{pct(pub_k)} vs. {pct(pub_p)} de las ventas · dato anual 2025",
         lider(pub_k, pub_p)),
 ]
-for col, html in zip(st.columns(5, gap="small"), cards):
+for col, html in zip(st.columns(5, gap="medium"), cards):
     col.markdown(html, unsafe_allow_html=True)
+
+espacio(26)
 
 # ============================================================
 # FILA 2 · CURVAS DE CRECIMIENTO + MODELO DE NEGOCIO
 # ============================================================
-c1, c2 = st.columns([1.75, 1], gap="small")
+c1, c2 = st.columns([1.75, 1], gap="medium")
 
 with c1:
     fig = go.Figure()
@@ -257,7 +275,7 @@ with c1:
             marker=dict(size=10, color="white", line=dict(color=color, width=3)),
             text=[pct(v, 1, True) for v in ORG_Q[emp]], textposition=pos,
             textfont=dict(color=color, size=11, family=FONT),
-            hovertemplate=f"<b>{nombre}</b> · %{{x}}<br>Crecimiento orgánico: %{{y:.1f}}%<extra></extra>",
+            hovertemplate=f"<b>{nombre}</b>: %{{y:.1f}}%<extra></extra>",
             visible=True,
         )
     for emp, nombre, color, pos in series:
@@ -267,15 +285,15 @@ with c1:
             marker=dict(size=10, color="white", line=dict(color=color, width=3)),
             text=[fmt(v) for v in ING_Q[emp]], textposition="top center",
             textfont=dict(color=color, size=11, family=FONT),
-            hovertemplate=f"<b>{nombre}</b> · %{{x}}<br>Ingresos: US$ %{{y:.1f}} mil M<extra></extra>",
-            visible=False, showlegend=True,
+            hovertemplate=f"<b>{nombre}</b>: US$ %{{y:.1f}} mil M<extra></extra>",
+            visible=False,
         )
 
     ann_org = [dict(x="T1 26", y=10, text="6 días extra<br>en el calendario", showarrow=True,
-                    arrowhead=0, ax=-70, ay=-6, arrowcolor=MUTED,
+                    arrowhead=0, ax=-72, ay=-4, arrowcolor=MUTED,
                     font=dict(size=10, color=MUTED, family=FONT))]
     ann_ing = [dict(x="T4 25", y=29.343, text="T4 de PepsiCo<br>= 16 semanas", showarrow=True,
-                    arrowhead=0, ax=-75, ay=-4, arrowcolor=MUTED,
+                    arrowhead=0, ax=-78, ay=-2, arrowcolor=MUTED,
                     font=dict(size=10, color=MUTED, family=FONT))]
 
     if cfg["rango"]:
@@ -283,55 +301,66 @@ with c1:
                       opacity=1, layer="below", line_width=0)
     fig.add_vline(x=3.5, line=dict(color="#D1D5DB", width=1, dash="dot"))
 
-    base(fig, "Evolución del crecimiento trimestral", t=70)
+    base(fig, "Evolución del crecimiento trimestral", t=104, b=64, l=72)
+    ejes(fig, x_titulo="Trimestre", y_titulo="Crecimiento orgánico (%)")
     fig.update_layout(
         annotations=ann_org,
         hovermode="x unified",
         updatemenus=[dict(
-            type="buttons", direction="right", x=0.99, xanchor="right", y=1.2, yanchor="top",
+            type="buttons", direction="right", x=0, xanchor="left", y=1.06, yanchor="bottom",
             showactive=True, bgcolor="#F3F4F6", bordercolor="#E5E7EB", borderwidth=1,
-            font=dict(size=11, color=TEXT, family=FONT), pad=dict(r=2, t=2),
+            font=dict(size=11, color=TEXT, family=FONT), pad=dict(r=0, t=0, l=0, b=0),
             buttons=[
                 dict(label="Crecimiento orgánico", method="update",
                      args=[{"visible": [True, True, False, False]},
-                           {"yaxis.range": [0, 12.5], "yaxis.ticksuffix": "%", "annotations": ann_org}]),
+                           {"yaxis.range": [0, 12.5], "yaxis.ticksuffix": "%",
+                            "yaxis.title.text": "Crecimiento orgánico (%)", "annotations": ann_org}]),
                 dict(label="Ingresos trimestrales", method="update",
                      args=[{"visible": [False, False, True, True]},
-                           {"yaxis.range": [0, 35], "yaxis.ticksuffix": "", "annotations": ann_ing}]),
+                           {"yaxis.range": [0, 35], "yaxis.ticksuffix": "",
+                            "yaxis.title.text": "Ingresos (US$ mil M)", "annotations": ann_ing}]),
             ],
         )],
     )
-    fig.update_yaxes(range=[0, 12.5], ticksuffix="%", gridcolor=GRID, zeroline=False,
-                     tickfont=dict(color=MUTED, size=11))
-    fig.update_xaxes(showgrid=False, tickfont=dict(color=TEXT, size=12))
+    fig.update_yaxes(range=[0, 12.5], ticksuffix="%", showgrid=True, gridcolor=GRID)
+    fig.update_xaxes(showgrid=False)
     mostrar(fig)
 
 with c2:
-    fig = make_subplots(rows=1, cols=2, specs=[[{"type": "domain"}, {"type": "domain"}]])
-    fig.add_trace(go.Pie(labels=["Bebidas"], values=[100], hole=0.7, sort=False,
+    fig = go.Figure()
+    fig.add_trace(go.Pie(labels=["Bebidas"], values=[100], hole=0.62, sort=False,
+                         domain=dict(x=[0.04, 0.46], y=[0.06, 0.66]),
                          marker=dict(colors=[KO], line=dict(color="white", width=2)), textinfo="none",
-                         hovertemplate="Coca-Cola · %{label}: %{value}%<extra></extra>"), 1, 1)
-    fig.add_trace(go.Pie(labels=list(MIX_PEP.keys()), values=list(MIX_PEP.values()), hole=0.7, sort=False,
+                         hovertemplate="Coca-Cola · %{label}: %{value}%<extra></extra>"))
+    fig.add_trace(go.Pie(labels=list(MIX_PEP.keys()), values=list(MIX_PEP.values()), hole=0.62, sort=False,
+                         domain=dict(x=[0.54, 0.96], y=[0.06, 0.66]),
                          marker=dict(colors=[PEP, PEP_LIGHT], line=dict(color="white", width=2)),
                          textinfo="none",
-                         hovertemplate="PepsiCo · %{label}: %{value}%<extra></extra>"), 1, 2)
-    fig.add_annotation(x=0.225, y=0.52, xref="paper", yref="paper", showarrow=False,
-                       text=f"<b style='color:{KO}'>Coca-Cola</b><br><b>100%</b> bebidas",
+                         hovertemplate="PepsiCo · %{label}: %{value}%<extra></extra>"))
+    # Leyendas arriba de cada dona
+    fig.add_annotation(x=0.25, y=0.74, xref="paper", yref="paper", yanchor="bottom", showarrow=False,
+                       align="center",
+                       text=(f"<b style='color:{KO}'>Coca-Cola</b><br>"
+                             f"<span style='color:{KO}'>●</span> Bebidas <b>100%</b>"),
                        font=dict(size=13, color=TEXT, family=FONT))
-    fig.add_annotation(x=0.775, y=0.52, xref="paper", yref="paper", showarrow=False,
-                       text=f"<b style='color:{PEP}'>PepsiCo</b><br><b>58%</b> alimentos<br><b>42%</b> bebidas",
+    fig.add_annotation(x=0.75, y=0.74, xref="paper", yref="paper", yanchor="bottom", showarrow=False,
+                       align="center",
+                       text=(f"<b style='color:{PEP}'>PepsiCo</b><br>"
+                             f"<span style='color:{PEP}'>●</span> Alimentos <b>58%</b><br>"
+                             f"<span style='color:{PEP_LIGHT}'>●</span> Bebidas <b>42%</b>"),
                        font=dict(size=13, color=TEXT, family=FONT))
-    fig.add_annotation(x=0.5, y=-0.09, xref="paper", yref="paper", showarrow=False,
+    fig.add_annotation(x=0.5, y=0.0, xref="paper", yref="paper", yanchor="top", showarrow=False,
                        text="Coca-Cola vende concentrado y licencia marcas · PepsiCo fabrica y distribuye",
                        font=dict(size=11, color=MUTED, family=FONT))
-    base(fig, "Modelo de negocio: ¿de qué viven?", b=45)
-    fig.update_layout(showlegend=False)
+    base(fig, "Modelo de negocio: ¿de qué viven?", t=60, b=44, l=16, r=16, leyenda=False)
     mostrar(fig)
+
+espacio(26)
 
 # ============================================================
 # FILA 3 · RENTABILIDAD · MARKETING · LECTURA RÁPIDA
 # ============================================================
-c3, c4, c5 = st.columns(3, gap="small")
+c3, c4, c5 = st.columns(3, gap="medium")
 
 with c3:
     cats = ["Margen bruto", "Margen operativo", "Margen neto"]
@@ -339,17 +368,18 @@ with c3:
     pep_vals = [p["m_bruto"], p["m_op"], p["m_neto"]]
     fig = go.Figure()
     fig.add_bar(y=cats, x=ko_vals, name="Coca-Cola", orientation="h", marker_color=KO,
-                text=[f"US$ {fmt(v)}" for v in ko_vals], textposition="outside",
+                text=[f"US$ {fmt(v)}" for v in ko_vals], textposition="outside", cliponaxis=False,
                 textfont=dict(family=FONT, size=12, color=KO),
                 hovertemplate="Coca-Cola · %{y}: %{x:.1f}%<extra></extra>")
     fig.add_bar(y=cats, x=pep_vals, name="PepsiCo", orientation="h", marker_color=PEP,
-                text=[f"US$ {fmt(v)}" for v in pep_vals], textposition="outside",
+                text=[f"US$ {fmt(v)}" for v in pep_vals], textposition="outside", cliponaxis=False,
                 textfont=dict(family=FONT, size=12, color=PEP),
                 hovertemplate="PepsiCo · %{y}: %{x:.1f}%<extra></extra>")
-    base(fig, "De cada US$ 100 vendidos, cuánto queda")
+    base(fig, "De cada US$ 100 vendidos, cuánto queda", t=96, b=64, l=24, r=36)
+    ejes(fig, x_titulo="% sobre las ventas", y_titulo=None)
     fig.update_layout(barmode="group")
-    fig.update_yaxes(autorange="reversed", showgrid=False, automargin=True, tickfont=dict(size=12))
-    fig.update_xaxes(visible=False, range=[0, 80])
+    fig.update_yaxes(autorange="reversed", showgrid=False)
+    fig.update_xaxes(range=[0, 85], ticksuffix="%", dtick=20, showgrid=True, gridcolor=GRID)
     mostrar(fig)
 
 with c4:
@@ -357,14 +387,15 @@ with c4:
     valores = [PUB_2025["ko"], PUB_2025["pep"], PUB_2025["pep_total"]]
     sobre_ventas = [pub_k, pub_p, pub_p_total]
     fig = go.Figure()
-    fig.add_bar(x=etiquetas, y=valores, marker_color=[KO, PEP, PEP_LIGHT],
+    fig.add_bar(x=etiquetas, y=valores, marker_color=[KO, PEP, PEP_LIGHT], width=0.55,
                 text=[f"<b>US$ {fmt(v)} mil M</b><br>{pct(s)} de ventas" for v, s in zip(valores, sobre_ventas)],
-                textposition="outside", textfont=dict(family=FONT, size=12, color=TEXT),
-                hovertemplate="%{x}: US$ %{y:.1f} mil M<extra></extra>", width=0.55)
-    base(fig, "Inversión publicitaria 2025")
-    fig.update_layout(showlegend=False)
-    fig.update_yaxes(visible=False, range=[0, 7.6])
-    fig.update_xaxes(showgrid=False, tickfont=dict(size=12))
+                textposition="outside", cliponaxis=False,
+                textfont=dict(family=FONT, size=12, color=TEXT),
+                hovertemplate="%{x}: US$ %{y:.1f} mil M<extra></extra>")
+    base(fig, "Inversión publicitaria 2025", t=70, b=72, l=72, r=24, leyenda=False)
+    ejes(fig, x_titulo=None, y_titulo="US$ miles de millones")
+    fig.update_yaxes(range=[0, 8], dtick=2, showgrid=True, gridcolor=GRID)
+    fig.update_xaxes(showgrid=False)
     mostrar(fig)
 
 with c5:
@@ -389,6 +420,8 @@ with c5:
         html += f'<div class="ins" style="border-left-color:{color}"><b style="color:{color}">{titulo}</b>{texto}</div>'
     html += "</div>"
     st.markdown(html, unsafe_allow_html=True)
+
+espacio(26)
 
 # ============================================================
 # NOTAS Y FUENTES
