@@ -106,7 +106,7 @@ def kpi(label, ko_val, pep_val, pie, ganador):
         f'<div class="kpi-val" style="color:{KO}">{ko_val}</div>'
         f'<div class="kpi-brand"><i style="background:{PEP}"></i>PepsiCo</div>'
         f'<div class="kpi-val" style="color:{PEP}">{pep_val}</div>'
-        f'<div class="kpi-foot">{pie}</div>'
+        f'<div class="kpi-foot"><span>{pie}</span></div>'
         f'<div class="kpi-win" style="color:{color};background:{soft}">▲ Ventaja {ganador}</div>'
         f'</div>'
     )
@@ -114,8 +114,9 @@ def kpi(label, ko_val, pep_val, pie, ganador):
 
 def base(fig, titulo, t=100, b=64, l=64, r=28, leyenda=True):
     fig.update_layout(
+        # Título centrado y en negrita
         title=dict(text=f"<b>{titulo}</b>", font=dict(size=16, color=TEXT, family=FONT),
-                   x=0.03, xanchor="left", y=0.975, yanchor="top"),
+                   x=0.5, xanchor="center", xref="paper", y=0.975, yanchor="top"),
         height=H,
         margin=dict(l=l, r=r, t=t, b=b),
         paper_bgcolor="white",
@@ -168,26 +169,34 @@ header[data-testid="stHeader"] {{background:transparent;}}
 
 .title {{font-size:2.15rem; font-weight:800; line-height:1.1; letter-spacing:-0.02em;}}
 .title .vs {{color:#9CA3AF; font-weight:600; font-size:1.5rem;}}
-.subtitle {{color:{MUTED}; font-size:.92rem; margin-top:6px;}}
+.tagline {{font-size:1.05rem; font-weight:600; color:#374151; margin-top:8px; letter-spacing:-0.005em;}}
+.subtitle {{color:{MUTED}; font-size:.86rem; margin-top:4px;}}
 .pill {{display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #E5E7EB;
         border-radius:999px; padding:6px 14px; font-size:.82rem; font-weight:600; color:{TEXT};
         margin:6px 0 4px 0;}}
 .pill b {{width:8px; height:8px; border-radius:50%; background:linear-gradient(90deg,{KO} 50%,{PEP} 50%);}}
 
-.kpi {{background:#fff; border:1px solid #E8EAEE; border-radius:16px; padding:18px 20px;
-       box-shadow:0 1px 3px rgba(16,24,40,.05); height:262px; box-sizing:border-box;
-       display:flex; flex-direction:column; transition:all .18s ease;}}
+/* ---------- Tarjetas KPI: todo centrado y alineado ---------- */
+.kpi {{background:#fff; border:1px solid #E8EAEE; border-radius:16px; padding:18px 16px 16px 16px;
+       box-shadow:0 1px 3px rgba(16,24,40,.05); height:276px; box-sizing:border-box;
+       display:flex; flex-direction:column; align-items:center; text-align:center;
+       transition:all .18s ease;}}
 .kpi:hover {{transform:translateY(-3px); box-shadow:0 10px 24px rgba(16,24,40,.10);}}
 .kpi-label {{font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
              color:{MUTED}; margin-bottom:12px;}}
-.kpi-brand {{display:flex; align-items:center; gap:7px; font-size:.8rem; color:#4B5563; font-weight:500;}}
+.kpi-brand {{display:flex; align-items:center; justify-content:center; gap:7px;
+             font-size:.8rem; color:#4B5563; font-weight:500;}}
 .kpi-brand i {{width:8px; height:8px; border-radius:50%; display:inline-block;}}
-.kpi-val {{font-size:1.32rem; font-weight:800; margin:2px 0 9px 0; white-space:nowrap; letter-spacing:-0.01em;}}
-.kpi-foot {{font-size:.72rem; color:{MUTED}; margin-top:auto; padding-top:9px; border-top:1px solid #F0F1F4;
-            line-height:1.4;}}
-.kpi-win {{font-size:.7rem; font-weight:700; margin-top:8px; padding:4px 10px; border-radius:999px;
-           align-self:flex-start;}}
+.kpi-val {{font-size:clamp(1.02rem, 1.35vw, 1.32rem); font-weight:800; margin:2px 0 9px 0;
+           white-space:nowrap; letter-spacing:-0.01em;}}
+.kpi-foot {{width:100%; height:46px; margin-top:auto; border-top:1px solid #F0F1F4;
+            display:flex; align-items:center; justify-content:center; box-sizing:border-box;
+            padding-top:6px;}}
+.kpi-foot span {{font-size:.72rem; color:{MUTED}; line-height:1.35;}}
+.kpi-win {{font-size:.7rem; font-weight:700; margin-top:8px; padding:5px 12px; border-radius:999px;
+           white-space:nowrap;}}
 
+/* ---------- Bloques de gráficos ---------- */
 div[data-testid="stPlotlyChart"] {{background:#fff; border:1px solid #E8EAEE; border-radius:16px;
       overflow:hidden; box-shadow:0 1px 3px rgba(16,24,40,.05); transition:box-shadow .18s ease;}}
 div[data-testid="stPlotlyChart"]:hover {{box-shadow:0 10px 24px rgba(16,24,40,.08);}}
@@ -196,7 +205,7 @@ div[data-testid="stPlotlyChart"]:hover {{box-shadow:0 10px 24px rgba(16,24,40,.0
         box-shadow:0 1px 3px rgba(16,24,40,.05); height:{H + 2}px; box-sizing:border-box;
         overflow-y:auto; transition:box-shadow .18s ease;}}
 .card:hover {{box-shadow:0 10px 24px rgba(16,24,40,.08);}}
-.card-title {{font-size:16px; font-weight:700; color:{TEXT}; margin-bottom:14px;}}
+.card-title {{font-size:16px; font-weight:700; color:{TEXT}; margin-bottom:16px; text-align:center;}}
 .ins {{border-left:3px solid #E5E7EB; padding:2px 0 2px 11px; margin-bottom:12px;
        font-size:.84rem; line-height:1.45; color:{TEXT};}}
 .ins b {{display:block; font-size:.76rem; text-transform:uppercase; letter-spacing:.05em; margin-bottom:2px;}}
@@ -215,6 +224,7 @@ with izq:
     st.markdown(
         f'<div class="title"><span style="color:{KO}">Coca-Cola</span> '
         f'<span class="vs">vs.</span> <span style="color:{PEP}">PepsiCo</span></div>'
+        '<div class="tagline">Análisis y comparación temporal del mercado de bebidas de consumo masivo</div>'
         '<div class="subtitle">Modelo de negocio · Finanzas · Marketing — datos oficiales presentados ante la SEC</div>',
         unsafe_allow_html=True,
     )
@@ -239,20 +249,20 @@ espacio(10)
 # ============================================================
 cards = [
     kpi("Ingresos netos", usd(k["ingresos"]), usd(p["ingresos"]),
-        f'Crecimiento {cfg["comp"]}: {pct(k["var"], 1, True)} vs. {pct(p["var"], 1, True)}',
+        f'Crecimiento {cfg["comp"]}<br>{pct(k["var"], 1, True)} / {pct(p["var"], 1, True)}',
         lider(k["ingresos"], p["ingresos"])),
     kpi("Margen operativo", pct(k["m_op"]), pct(p["m_op"]),
-        f'Ajustado: {pct(k["m_op_aj"])} vs. {pct(p["m_op_aj"])}',
+        f'Margen ajustado<br>{pct(k["m_op_aj"])} / {pct(p["m_op_aj"])}',
         lider(k["m_op"], p["m_op"])),
     kpi("Beneficio neto", usd(k["neto"]), usd(p["neto"]),
-        f'Margen neto: {pct(k["m_neto"])} vs. {pct(p["m_neto"])}',
+        f'Margen neto<br>{pct(k["m_neto"])} / {pct(p["m_neto"])}',
         lider(k["neto"], p["neto"])),
     kpi("Crecimiento orgánico", org_txt(k["org"]), org_txt(p["org"]),
-        "2025 → 1S 2026 · sin efecto cambiario ni M&A" if len(claves) > 1
-        else "Sin efecto cambiario ni adquisiciones",
+        "2025 → 1S 2026<br>sin tipo de cambio ni M&A" if len(claves) > 1
+        else "Sin efecto cambiario<br>ni adquisiciones",
         lider(k["org"][-1], p["org"][-1])),
     kpi("Inversión publicitaria", usd(PUB_2025["ko"]), usd(PUB_2025["pep"]),
-        f"{pct(pub_k)} vs. {pct(pub_p)} de las ventas · dato anual 2025",
+        f"% de las ventas (2025)<br>{pct(pub_k)} / {pct(pub_p)}",
         lider(pub_k, pub_p)),
 ]
 for col, html in zip(st.columns(5, gap="medium"), cards):
@@ -328,31 +338,36 @@ with c1:
 
 with c2:
     fig = go.Figure()
+    # Donas: misma altura y centradas en cada mitad
     fig.add_trace(go.Pie(labels=["Bebidas"], values=[100], hole=0.62, sort=False,
-                         domain=dict(x=[0.04, 0.46], y=[0.06, 0.66]),
+                         domain=dict(x=[0.05, 0.45], y=[0.04, 0.66]),
                          marker=dict(colors=[KO], line=dict(color="white", width=2)), textinfo="none",
                          hovertemplate="Coca-Cola · %{label}: %{value}%<extra></extra>"))
     fig.add_trace(go.Pie(labels=list(MIX_PEP.keys()), values=list(MIX_PEP.values()), hole=0.62, sort=False,
-                         domain=dict(x=[0.54, 0.96], y=[0.06, 0.66]),
+                         domain=dict(x=[0.55, 0.95], y=[0.04, 0.66]),
                          marker=dict(colors=[PEP, PEP_LIGHT], line=dict(color="white", width=2)),
                          textinfo="none",
                          hovertemplate="PepsiCo · %{label}: %{value}%<extra></extra>"))
-    # Leyendas arriba de cada dona
-    fig.add_annotation(x=0.25, y=0.74, xref="paper", yref="paper", yanchor="bottom", showarrow=False,
-                       align="center",
-                       text=(f"<b style='color:{KO}'>Coca-Cola</b><br>"
-                             f"<span style='color:{KO}'>●</span> Bebidas <b>100%</b>"),
-                       font=dict(size=13, color=TEXT, family=FONT))
-    fig.add_annotation(x=0.75, y=0.74, xref="paper", yref="paper", yanchor="bottom", showarrow=False,
-                       align="center",
-                       text=(f"<b style='color:{PEP}'>PepsiCo</b><br>"
-                             f"<span style='color:{PEP}'>●</span> Alimentos <b>58%</b><br>"
-                             f"<span style='color:{PEP_LIGHT}'>●</span> Bebidas <b>42%</b>"),
-                       font=dict(size=13, color=TEXT, family=FONT))
-    fig.add_annotation(x=0.5, y=0.0, xref="paper", yref="paper", yanchor="top", showarrow=False,
+
+    # Leyendas centradas sobre cada dona, alineadas arriba a la misma altura
+    leyendas = [
+        (0.25, f"<b style='color:{KO}'>Coca-Cola</b><br>"
+               f"<span style='color:{KO}'>●</span> Bebidas <b>100%</b>"),
+        (0.75, f"<b style='color:{PEP}'>PepsiCo</b><br>"
+               f"<span style='color:{PEP}'>●</span> Alimentos <b>58%</b><br>"
+               f"<span style='color:{PEP_LIGHT}'>●</span> Bebidas <b>42%</b>"),
+    ]
+    for x, texto in leyendas:
+        fig.add_annotation(x=x, y=0.99, xref="paper", yref="paper",
+                           xanchor="center", yanchor="top", align="center",
+                           showarrow=False, text=texto,
+                           font=dict(size=12, color=TEXT, family=FONT))
+
+    fig.add_annotation(x=0.5, y=-0.02, xref="paper", yref="paper", xanchor="center", yanchor="top",
+                       showarrow=False,
                        text="Coca-Cola vende concentrado y licencia marcas · PepsiCo fabrica y distribuye",
                        font=dict(size=11, color=MUTED, family=FONT))
-    base(fig, "Modelo de negocio: ¿de qué viven?", t=60, b=44, l=16, r=16, leyenda=False)
+    base(fig, "Modelo de negocio: ¿de qué viven?", t=58, b=46, l=16, r=16, leyenda=False)
     mostrar(fig)
 
 espacio(26)
