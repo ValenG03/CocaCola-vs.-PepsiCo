@@ -1,5 +1,10 @@
+import base64
+import io
+from pathlib import Path
+
 import streamlit as st
 import plotly.graph_objects as go
+from PIL import Image
 
 # ============================================================
 # CONFIGURACIÓN
@@ -18,6 +23,7 @@ AXIS = "#CBD0D8"
 FONT = "Inter, sans-serif"
 H = 400  # altura única de todos los bloques de gráficos
 CFG = {"displayModeBar": False}
+IMAGEN_BANNER = "PepsiCoca.png"  # imagen subida al repo, en la misma carpeta que app.py
 
 # ============================================================
 # DATOS OFICIALES (US$ miles de millones · GAAP)
@@ -56,6 +62,32 @@ PERIODOS = {
                           "comp": "vs. 1S 2025", "rango": (3.5, 5.5)},
 }
 DEFAULT = "2025 + 1S 2026"
+
+
+# ============================================================
+# BANNER DE PORTADA
+# ============================================================
+@st.cache_data
+def cargar_banner(nombre):
+    ruta = Path(__file__).parent / nombre
+    if not ruta.exists():
+        return None
+    img = Image.open(ruta).convert("RGB")
+    w, h = img.size
+    mitad = w // 2
+    # Invierte las mitades: Coca-Cola (rojo) a la izquierda, Pepsi (azul) a la derecha
+    izq = img.crop((0, 0, mitad, h))
+    der = img.crop((mitad, 0, w, h))
+    nueva = Image.new("RGB", (w, h))
+    nueva.paste(der, (0, 0))
+    nueva.paste(izq, (w - mitad, 0))
+    # Recorta el espacio vacío de arriba y abajo
+    nueva = nueva.crop((0, int(h * 0.2), w, int(h * 0.8)))
+    color_izq = nueva.getpixel((4, 4))
+    color_der = nueva.getpixel((nueva.width - 5, 4))
+    buffer = io.BytesIO()
+    nueva.save(buffer, format="PNG")
+    return base64.b64encode(buffer.getvalue()).decode(), color_izq, color_der
 
 
 # ============================================================
@@ -114,7 +146,6 @@ def kpi(label, ko_val, pep_val, pie, ganador):
 
 def base(fig, titulo, t=100, b=64, l=64, r=28, leyenda=True):
     fig.update_layout(
-        # Título centrado y en negrita
         title=dict(text=f"<b>{titulo}</b>", font=dict(size=16, color=TEXT, family=FONT),
                    x=0.5, xanchor="center", xref="paper", y=0.975, yanchor="top"),
         height=H,
@@ -164,8 +195,19 @@ html, body, .stApp, .stApp *:not([data-testid="stIconMaterial"]) {{
 .stApp {{background:#F4F5F7;}}
 header[data-testid="stHeader"] {{background:transparent;}}
 [data-testid="stToolbar"], [data-testid="stDecoration"], #MainMenu, footer {{display:none;}}
-.block-container {{padding-top:1.4rem; padding-bottom:1.4rem; max-width:1520px;}}
+.block-container {{padding-top:1.2rem; padding-bottom:1.4rem; max-width:1520px;}}
 .stApp p, .stApp label, .stApp span, .stApp li {{color:{TEXT};}}
+
+/* ---------- Banner ---------- */
+.banner {{position:relative; height:190px; border-radius:18px; overflow:hidden;
+          display:flex; align-items:center; justify-content:center;
+          box-shadow:0 6px 20px rgba(16,24,40,.12); margin-bottom:24px;}}
+.banner img {{height:100%; max-width:100%; object-fit:contain; display:block;}}
+.vs-badge {{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+            width:46px; height:46px; border-radius:50%; background:#fff;
+            display:flex; align-items:center; justify-content:center;
+            font-size:.85rem; font-weight:800; letter-spacing:.04em; color:{TEXT};
+            box-shadow:0 4px 14px rgba(0,0,0,.25);}}
 
 .title {{font-size:2.15rem; font-weight:800; line-height:1.1; letter-spacing:-0.02em;}}
 .title .vs {{color:#9CA3AF; font-weight:600; font-size:1.5rem;}}
@@ -215,6 +257,22 @@ div[data-testid="stSegmentedControl"] {{display:flex; justify-content:flex-end;}
 """,
     unsafe_allow_html=True,
 )
+
+# ============================================================
+# BANNER AL COMIENZO DE LA PÁGINA
+# ============================================================
+banner = cargar_banner(IMAGEN_BANNER)
+if banner:
+    b64, color_izq, color_der = banner
+    st.markdown(
+        f'<div class="banner" style="background:linear-gradient(90deg, rgb{color_izq} 50%, rgb{color_der} 50%);">'
+        f'<img src="data:image/png;base64,{b64}" alt="Coca-Cola vs. PepsiCo">'
+        f'<span class="vs-badge">VS</span>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
+else:
+    st.warning(f"No se encontró la imagen '{IMAGEN_BANNER}' en la carpeta del repositorio.")
 
 # ============================================================
 # ENCABEZADO + SELECTOR DE PERÍODO
@@ -338,7 +396,6 @@ with c1:
 
 with c2:
     fig = go.Figure()
-    # Donas: misma altura y centradas en cada mitad
     fig.add_trace(go.Pie(labels=["Bebidas"], values=[100], hole=0.62, sort=False,
                          domain=dict(x=[0.05, 0.45], y=[0.04, 0.66]),
                          marker=dict(colors=[KO], line=dict(color="white", width=2)), textinfo="none",
@@ -349,7 +406,6 @@ with c2:
                          textinfo="none",
                          hovertemplate="PepsiCo · %{label}: %{value}%<extra></extra>"))
 
-    # Leyendas centradas sobre cada dona, alineadas arriba a la misma altura
     leyendas = [
         (0.25, f"<b style='color:{KO}'>Coca-Cola</b><br>"
                f"<span style='color:{KO}'>●</span> Bebidas <b>100%</b>"),
