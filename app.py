@@ -209,14 +209,18 @@ header[data-testid="stHeader"] {{background:transparent;}}
             font-size:.85rem; font-weight:800; letter-spacing:.04em; color:{TEXT};
             box-shadow:0 4px 14px rgba(0,0,0,.25);}}
 
+/* ---------- Encabezado centrado ---------- */
+.header-center {{text-align:center; margin:4px auto 0 auto; max-width:900px;}}
 .title {{font-size:2.15rem; font-weight:800; line-height:1.1; letter-spacing:-0.02em;}}
 .title .vs {{color:#9CA3AF; font-weight:600; font-size:1.5rem;}}
 .tagline {{font-size:1.05rem; font-weight:600; color:#374151; margin-top:8px; letter-spacing:-0.005em;}}
 .subtitle {{color:{MUTED}; font-size:.86rem; margin-top:4px;}}
+.pill-wrap {{text-align:center;}}
 .pill {{display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #E5E7EB;
         border-radius:999px; padding:6px 14px; font-size:.82rem; font-weight:600; color:{TEXT};
         margin:6px 0 4px 0;}}
 .pill b {{width:8px; height:8px; border-radius:50%; background:linear-gradient(90deg,{KO} 50%,{PEP} 50%);}}
+div[data-testid="stSegmentedControl"], div[data-testid="stButtonGroup"] {{display:flex; justify-content:center;}}
 
 /* ---------- Tarjetas KPI: todo centrado y alineado ---------- */
 .kpi {{background:#fff; border:1px solid #E8EAEE; border-radius:16px; padding:18px 16px 16px 16px;
@@ -252,7 +256,6 @@ div[data-testid="stPlotlyChart"]:hover {{box-shadow:0 10px 24px rgba(16,24,40,.0
        font-size:.84rem; line-height:1.45; color:{TEXT};}}
 .ins b {{display:block; font-size:.76rem; text-transform:uppercase; letter-spacing:.05em; margin-bottom:2px;}}
 .note {{font-size:.78rem; color:{MUTED}; text-align:center; margin-top:6px;}}
-div[data-testid="stSegmentedControl"] {{display:flex; justify-content:flex-end;}}
 </style>
 """,
     unsafe_allow_html=True,
@@ -275,18 +278,21 @@ else:
     st.warning(f"No se encontró la imagen '{IMAGEN_BANNER}' en la carpeta del repositorio.")
 
 # ============================================================
-# ENCABEZADO + SELECTOR DE PERÍODO
+# ENCABEZADO CENTRADO + SELECTOR DE PERÍODO
 # ============================================================
-izq, der = st.columns([2.1, 1.4], vertical_alignment="center")
-with izq:
-    st.markdown(
-        f'<div class="title"><span style="color:{KO}">Coca-Cola</span> '
-        f'<span class="vs">vs.</span> <span style="color:{PEP}">PepsiCo</span></div>'
-        '<div class="tagline">Análisis y comparación temporal del mercado de bebidas de consumo masivo</div>'
-        '<div class="subtitle">Modelo de negocio · Finanzas · Marketing — datos oficiales presentados ante la SEC</div>',
-        unsafe_allow_html=True,
-    )
-with der:
+st.markdown(
+    f'<div class="header-center">'
+    f'<div class="title"><span style="color:{KO}">Coca-Cola</span> '
+    f'<span class="vs">vs.</span> <span style="color:{PEP}">PepsiCo</span></div>'
+    '<div class="tagline">Análisis y comparación temporal del mercado de bebidas de consumo masivo</div>'
+    '<div class="subtitle">Modelo de negocio · Finanzas · Marketing — datos oficiales presentados ante la SEC</div>'
+    '</div>',
+    unsafe_allow_html=True,
+)
+espacio(14)
+
+_, centro, _ = st.columns([1, 2, 1])
+with centro:
     sel = st.segmented_control("Período", list(PERIODOS.keys()), default=DEFAULT,
                                label_visibility="collapsed", key="periodo")
 
@@ -299,8 +305,9 @@ pub_k = PUB_2025["ko"] / VENTAS_2025["ko"] * 100
 pub_p = PUB_2025["pep"] / VENTAS_2025["pep"] * 100
 pub_p_total = PUB_2025["pep_total"] / VENTAS_2025["pep"] * 100
 
-st.markdown(f'<div class="pill"><b></b>{cfg["detalle"]}</div>', unsafe_allow_html=True)
-espacio(10)
+st.markdown(f'<div class="pill-wrap"><div class="pill"><b></b>{cfg["detalle"]}</div></div>',
+            unsafe_allow_html=True)
+espacio(14)
 
 # ============================================================
 # FILA 1 · 5 PARÁMETROS CLAVE
